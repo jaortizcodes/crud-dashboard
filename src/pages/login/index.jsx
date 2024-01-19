@@ -1,8 +1,9 @@
 import { Box, Button, Card, CardContent, TextField } from "@mui/material";
 import * as yup from "yup";
 import { useMediaQuery } from "@mui/material";
-import React from "react";
+import React, { useEffect } from "react";
 import { Formik } from "formik";
+import { supabase } from "../../config/supabaseClient";
 
 export default function Login() {
   const initialValues = {
@@ -14,9 +15,28 @@ export default function Login() {
     password: yup.string().required("Required"),
   });
   const isNonMobile = useMediaQuery("(min-width: 600px)");
-  const handleLoginFormSubmit = (values) => {
+  const handleLoginFormSubmit = async (values) => {
     console.log(values);
+    // //oauth
+    // const { data, error } = await supabase.auth.signInWithOAuth({
+    //   provider: "github",
+    //   options: {
+    //     redirectTo: "https://localhost:3000/dashboard",
+    //   },
+    // });
+    // console.log(error, data);
   };
+  //oauth
+  // async function getSession() {
+  //   const {
+  //     data: { session },
+  //   } = await supabase.auth.getSession();
+  //   console.log(session);
+  // }
+  // useEffect(() => {
+  //   getSession();
+  // }, []);
+
   return (
     <Box
       display="flex"
