@@ -5,6 +5,9 @@ import { tokens } from "../../config/themes";
 import { Formik } from "formik";
 import * as yup from "yup";
 import { Box, Button, TextField, useTheme, Typography } from "@mui/material";
+import { DistributorService } from "../../services/DatabaseService";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const initialValues = {
   firstName: "",
@@ -26,23 +29,24 @@ const distributorSchema = yup.object().shape({
   address2: yup.string().required("Required"),
 });
 export default function AddForm() {
-  const modalStyle = {
-    position: "absolute",
-    top: "50%",
-    left: "50%",
-    transform: "translate(-50%, -50%)",
-    width: 800,
-    boxShadow: 24,
-    p: 4,
-  };
   const isNotMobile = useMediaQuery("(min-width: 600px)");
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
-  const handleFormSubmit = (values) => {
-    console.log(values);
+  const handleFormSubmit = async (values, { resetForm }) => {
+    toast.info("Saving..."); // Show a loading toast
+    try {
+      console.log(values);
+      await DistributorService.create(values);
+      toast.success("Form saved successfully");
+      resetForm();
+      // Show a success toast
+    } catch (error) {
+      toast.error("Error saving form: " + error.message); // Show an error toast
+    }
   };
   return (
-    <Box m="20px" sx={[modalStyle, { backgroundColor: colors.primary[900] }]}>
+    <Box m="20px">
+      <ToastContainer />
       <Typography variant="h3" fontWeight="bold" my="20px">
         Create new distributor
       </Typography>
@@ -50,7 +54,6 @@ export default function AddForm() {
         onSubmit={handleFormSubmit}
         initialValues={initialValues}
         validationSchema={distributorSchema}
-        m
       >
         {({
           values,
@@ -59,6 +62,7 @@ export default function AddForm() {
           handleBlur,
           handleChange,
           handleSubmit,
+          isSubmitting,
         }) => (
           <form onSubmit={handleSubmit}>
             <Box
@@ -76,7 +80,7 @@ export default function AddForm() {
                 variant="filled"
                 type="text"
                 label="First Name"
-                onBlue={handleBlur}
+                onBlur={handleBlur}
                 onChange={handleChange}
                 value={values.firstName}
                 name="firstName"
@@ -89,7 +93,7 @@ export default function AddForm() {
                 variant="filled"
                 type="text"
                 label="Last Name"
-                onBlue={handleBlur}
+                onBlur={handleBlur}
                 onChange={handleChange}
                 value={values.lastName}
                 name="lastName"
@@ -103,7 +107,7 @@ export default function AddForm() {
                 variant="filled"
                 type="text"
                 label="Email"
-                onBlue={handleBlur}
+                onBlur={handleBlur}
                 onChange={handleChange}
                 value={values.email}
                 name="email"
@@ -116,7 +120,7 @@ export default function AddForm() {
                 variant="filled"
                 type="text"
                 label="Phone Number"
-                onBlue={handleBlur}
+                onBlur={handleBlur}
                 onChange={handleChange}
                 value={values.phoneNo}
                 name="phoneNo"
@@ -129,7 +133,7 @@ export default function AddForm() {
                 variant="filled"
                 type="text"
                 label="Address 1"
-                onBlue={handleBlur}
+                onBlur={handleBlur}
                 onChange={handleChange}
                 value={values.address1}
                 name="address1"
@@ -142,7 +146,7 @@ export default function AddForm() {
                 variant="filled"
                 type="text"
                 label="Address 2"
-                onBlue={handleBlur}
+                onBlur={handleBlur}
                 onChange={handleChange}
                 value={values.address2}
                 name="address2"
@@ -152,7 +156,12 @@ export default function AddForm() {
               />
             </Box>
             <Box display="flex" justifyContent="end" mt="20px">
-              <Button type="submit" color="secondary" variant="contained">
+              <Button
+                type="submit"
+                color="secondary"
+                variant="contained"
+                disabled={isSubmitting}
+              >
                 Create
               </Button>
             </Box>

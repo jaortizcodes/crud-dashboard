@@ -1,38 +1,89 @@
 import { React, useState } from "react";
-import { Box, Button, Modal, Typography, useTheme } from "@mui/material";
+import { Box, Button, Modal, IconButton } from "@mui/material";
 import Header from "../../components/Header";
 import Table from "../../components/Table";
 import AddForm from "../../pages/distributors/AddForm";
-import AdminPanelSettingsOutlinedIcon from "@mui/icons-material/AdminPanelSettingsOutlined";
-import LockOpenOutlinedIcon from "@mui/icons-material/LockOpenOutlined";
-import SecurityOutlinedIcon from "@mui/icons-material/SecurityOutlined";
-import { tokens } from "../../config/themes";
-import { useQuery, QueryClient, QueryClientProvider } from "react-query";
+import {
+  useQuery,
+  QueryClient,
+  QueryClientProvider,
+} from "@tanstack/react-query";
 import { DistributorService } from "../../services/DatabaseService";
-import { mockDataTeam } from "../../data/mockData";
+import CloseIcon from "@mui/icons-material/Close";
 const queryClient = new QueryClient();
 export default function Distributors() {
-  const theme = useTheme();
-  const colors = tokens(theme.palette.mode);
-  // const { data, status } = useQuery("distributors", DistributorService.getAll);
+  const [openCreateModal, setOpenCreateModal] = useState(false);
+  const handleOpenCreateModal = () => setOpenCreateModal(true);
+  const handleCloseCreateModal = () => setOpenCreateModal(false);
+  return (
+    <QueryClientProvider client={queryClient}>
+      <Box m="20px 20px 0 20px">
+        <Header title="Distributors" description="Manage your distributors" />
 
+        <Box display="flex" justifyContent="end">
+          <Button
+            type="button"
+            onClick={handleOpenCreateModal}
+            color="secondary"
+            variant="contained"
+          >
+            Create New Distributor
+          </Button>
+        </Box>
+        <Modal
+          open={openCreateModal}
+          onClose={handleCloseCreateModal}
+          aria-labelledby="modal-modal-title"
+          aria-describedby="modal-modal-description"
+        >
+          <Box
+            sx={{
+              position: "absolute",
+              top: "50%",
+              left: "50%",
+              transform: "translate(-50%, -50%)",
+              width: 800, // Set the width of the modal here
+              bgcolor: "background.paper",
+              boxShadow: 24,
+              p: 4,
+            }}
+          >
+            <IconButton
+              onClick={handleCloseCreateModal}
+              style={{ position: "absolute", top: 5, right: 5 }}
+            >
+              <CloseIcon />
+            </IconButton>
+            <AddForm />
+          </Box>
+        </Modal>
+
+        <Box>
+          <DistributorsTable />
+        </Box>
+      </Box>
+    </QueryClientProvider>
+  );
+}
+
+function DistributorsTable() {
   const columns = [
     { field: "id", headerName: "ID" },
     {
-      field: "name",
-      headerName: "Full Name",
+      field: "firstName",
+      headerName: "First Name",
       flex: 1,
       cellclassName: "name-column--cell",
     },
     {
-      field: "age",
-      headerName: "Age",
-      type: "number",
-      headerAlign: "left",
-      align: "left",
+      field: "lastName",
+      headerName: "Last  Name",
+      flex: 1,
+      cellclassName: "name-column--cell",
     },
+
     {
-      field: "phone",
+      field: "phoneNo",
       headerName: "Phone Number",
       flex: 1,
     },
@@ -42,64 +93,24 @@ export default function Distributors() {
       flex: 1,
     },
     {
-      field: "access",
-      headerName: "Access Level",
+      field: "address1",
+      headerName: "Address 1",
       flex: 1,
-      renderCell: ({ row: { access } }) => {
-        return (
-          <Box
-            width="60%"
-            m="0 auto"
-            p="5px"
-            display="flex"
-            justifyContent="center"
-            backgroundColor={
-              access === "admin"
-                ? colors.pinkAccent[600]
-                : colors.pinkAccent[700]
-            }
-            borderRadius="4px"
-          >
-            {access === "admin" && <AdminPanelSettingsOutlinedIcon />}
-            {access === "manager" && <SecurityOutlinedIcon />}
-            {access === "user" && <LockOpenOutlinedIcon />}
-            <Typography color={colors.white[100]} sx={{ ml: "5px" }}>
-              {access}
-            </Typography>
-          </Box>
-        );
-      },
+    },
+    {
+      field: "address2",
+      headerName: "Address 2",
+      flex: 1,
     },
   ];
-  const [openCreateModal, setOpenCreateModal] = useState(false);
-  const handleOpenCreateModal = () => setOpenCreateModal(true);
-  const handleCloseCreateModal = () => setOpenCreateModal(false);
-  return (
-    <Box m="20px 20px 0 20px">
-      <Header title="Distributors" description="Manage your distributors" />
+  const { isPending, error, data } = useQuery({
+    queryKey: ["getAllDistributors"],
+    queryFn: DistributorService.getAll,
+  });
 
-      <Box display="flex" justifyContent="end">
-        <Button
-          type="button"
-          onClick={handleOpenCreateModal}
-          color="secondary"
-          variant="contained"
-        >
-          Create New Distributor
-        </Button>
-      </Box>
-      <Modal
-        open={openCreateModal}
-        onClose={handleCloseCreateModal}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-      >
-        <AddForm />
-      </Modal>
+  if (isPending) return "Loading...";
 
-      <Box>
-        <Table rows={mockDataTeam} columns={columns} />
-      </Box>
-    </Box>
-  );
+  if (error) return "An error has occurred: " + error.message;
+
+  return <Table rows={data} columns={columns} />;
 }
