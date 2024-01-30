@@ -44,7 +44,7 @@ class DatabaseService {
     return await this.collection.doc(id).update(values);
   };
 
-  remove = async (id) => {
+  delete = async (id) => {
     return await this.collection.doc(id).delete();
   };
 }

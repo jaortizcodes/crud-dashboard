@@ -1,13 +1,13 @@
 import React from "react";
 import useMediaQuery from "@mui/material/useMediaQuery";
-import { phoneRegex } from "../../config/regex";
-import { tokens } from "../../config/themes";
+import { phoneRegex } from "../../../utils/regex";
+import { tokens } from "../../../config/themes";
 import { Formik } from "formik";
 import * as yup from "yup";
 import { Box, Button, TextField, useTheme, Typography } from "@mui/material";
-import { DistributorService } from "../../services/DatabaseService";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { DistributorService } from "../../../services/DatabaseService";
+import { toast } from "react-toastify";
+import { distributorSchema } from "../../../utils/schema";
 
 const initialValues = {
   firstName: "",
@@ -17,36 +17,22 @@ const initialValues = {
   address1: "",
   address2: "",
 };
-const distributorSchema = yup.object().shape({
-  firstName: yup.string().required("Required"),
-  lastName: yup.string().required("Required"),
-  email: yup.string().email("Invalid email").required("Required"),
-  phoneNo: yup
-    .string()
-    .matches(phoneRegex, "Phone number is not valid")
-    .required("Required"),
-  address1: yup.string().required("Required"),
-  address2: yup.string().required("Required"),
-});
+
 export default function AddForm() {
   const isNotMobile = useMediaQuery("(min-width: 600px)");
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const handleFormSubmit = async (values, { resetForm }) => {
-    toast.info("Saving..."); // Show a loading toast
     try {
       console.log(values);
       await DistributorService.create(values);
-      toast.success("Form saved successfully");
+
+      toast.success("Distributor created successfully");
       resetForm();
-      // Show a success toast
-    } catch (error) {
-      toast.error("Error saving form: " + error.message); // Show an error toast
-    }
+    } catch (error) {}
   };
   return (
     <Box m="20px">
-      <ToastContainer />
       <Typography variant="h3" fontWeight="bold" my="20px">
         Create new distributor
       </Typography>

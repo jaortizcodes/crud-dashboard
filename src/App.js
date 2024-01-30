@@ -7,6 +7,8 @@ import Dashboard from "./pages/dashboard";
 import Distributors from "./pages/distributors";
 import Topbar from "./global/Topbar";
 import Sidebar from "./global/Sidebar";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 export default function App() {
   const [theme, colorMode] = useMode();
   return (
@@ -22,6 +24,7 @@ export default function App() {
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/distributors" element={<Distributors />} />
             </Routes>
+            <ToastContainer />
           </main>
         </div>
       </ThemeProvider>

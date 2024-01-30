@@ -3,7 +3,6 @@ import * as yup from "yup";
 import { useMediaQuery } from "@mui/material";
 import React, { useEffect } from "react";
 import { Formik } from "formik";
-import { supabase } from "../../config/supabaseClient";
 
 export default function Login() {
   const initialValues = {
