@@ -1,40 +1,66 @@
 import React from "react";
 import useMediaQuery from "@mui/material/useMediaQuery";
-import { phoneRegex } from "../../../utils/regex";
-import { tokens } from "../../../config/themes";
+
 import { Formik } from "formik";
-import * as yup from "yup";
-import { Box, Button, TextField, useTheme, Typography } from "@mui/material";
+import { Box, Button, TextField, Typography } from "@mui/material";
 import { DistributorService } from "../../../services/DatabaseService";
 import { toast } from "react-toastify";
 import { distributorSchema } from "../../../utils/schema";
+import useGetAllDistributors from "../hooks/getAllDistributors";
 
-const initialValues = {
-  firstName: "",
-  lastName: "",
-  email: "",
-  phoneNo: "",
-  address1: "",
-  address2: "",
-};
-
-export default function AddForm() {
+export default function AddForm({ closeModal, isEditing, params }) {
+  const { refetch } = useGetAllDistributors();
   const isNotMobile = useMediaQuery("(min-width: 600px)");
-  const theme = useTheme();
-  const colors = tokens(theme.palette.mode);
+  const modalHeader = isEditing ? "Edit Distributor" : "Add Distributor";
+  const initialValues = isEditing
+    ? {
+        id: params.row.id,
+        firstName: params.row.firstName.toString(),
+        lastName: params.row.lastName.toString(),
+        email: params.row.email.toString(),
+        phoneNo: params.row.phoneNo.toString(),
+        address1: params.row.address1.toString(),
+        address2: params.row.address2.toString(),
+      }
+    : {
+        firstName: "",
+        lastName: "",
+        email: "",
+        phoneNo: "",
+        address1: "",
+        address2: "",
+      };
   const handleFormSubmit = async (values, { resetForm }) => {
-    try {
-      console.log(values);
-      await DistributorService.create(values);
+    if (isEditing) {
+      try {
+        console.log(values.id);
+        await DistributorService.update(values.id, values);
 
-      toast.success("Distributor created successfully");
-      resetForm();
-    } catch (error) {}
+        toast.success("Distributor data is updated successfully");
+        resetForm();
+        refetch();
+        closeModal();
+      } catch (error) {
+        toast.error("Error: Something went wrong.");
+      }
+    } else {
+      try {
+        console.log(values);
+        await DistributorService.create(values);
+
+        toast.success("Distributor created successfully");
+        resetForm();
+        refetch();
+        closeModal();
+      } catch (error) {
+        toast.error("Error: Something went wrong.");
+      }
+    }
   };
   return (
     <Box m="20px">
       <Typography variant="h3" fontWeight="bold" my="20px">
-        Create new distributor
+        {modalHeader}
       </Typography>
       <Formik
         onSubmit={handleFormSubmit}

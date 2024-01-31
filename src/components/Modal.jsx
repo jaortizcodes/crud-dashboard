@@ -2,7 +2,7 @@ import React from "react";
 import { Modal, Box, IconButton } from "@mui/material";
 
 import CloseIcon from "@mui/icons-material/Close";
-export default function ModalComponent({ open, onClose, component }) {
+export default function ModalComponent({ open, onClose, component, width }) {
   return (
     <Modal
       open={open}
@@ -16,7 +16,7 @@ export default function ModalComponent({ open, onClose, component }) {
           top: "50%",
           left: "50%",
           transform: "translate(-50%, -50%)",
-          width: 800,
+          width: { width },
           bgcolor: "background.paper",
           boxShadow: 24,
           p: 4,

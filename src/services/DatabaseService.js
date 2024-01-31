@@ -1,5 +1,14 @@
 import { db } from "../config/firebase";
-import { collection, getDocs, addDoc } from "firebase/firestore";
+import {
+  collection,
+  getDocs,
+  addDoc,
+  deleteDoc,
+  doc,
+  setDoc,
+  serverTimestamp,
+  orderBy,
+} from "firebase/firestore";
 class DatabaseService {
   collectionName;
 
@@ -7,21 +16,23 @@ class DatabaseService {
     this.collection = collection(db, collectionName);
   }
 
+  getOne = async ({ queryKey }) => {
+    const { id } = queryKey[1];
+    if (!id) return;
+    const snapshot = await this.collection.doc(id).get();
+    return snapshot.data();
+  };
   getAll = async () => {
-    const snapshot = await getDocs(this.collection);
+    const snapshot = await getDocs(
+      this.collection,
+      orderBy("timestamp ", "desc")
+    );
     return snapshot.docs.map((doc) => {
       return {
         id: doc.id,
         ...doc.data(),
       };
     });
-  };
-
-  getOne = async ({ queryKey }) => {
-    const { id } = queryKey[1];
-    if (!id) return;
-    const snapshot = await this.collection.doc(id).get();
-    return snapshot.data();
   };
 
   getReference = async (documentReference) => {
@@ -36,16 +47,25 @@ class DatabaseService {
   };
 
   create = async (data) => {
-    const result = await addDoc(this.collection, data);
+    const updatedData = {
+      ...data,
+      timestamp: serverTimestamp(),
+    };
+    const result = await addDoc(this.collection, updatedData, { merge: true });
     return result;
   };
 
-  update = async (id, values) => {
-    return await this.collection.doc(id).update(values);
+  update = async (id, data) => {
+    // return await this.collection.doc(id).update(values);
+    const myDocRef = doc(this.collection, id);
+    const result = await setDoc(myDocRef, data);
+    return result;
   };
 
-  delete = async (id) => {
-    return await this.collection.doc(id).delete();
+  remove = async (id) => {
+    // this.mydoc = doc(this.collection, id);
+    const result = await deleteDoc(doc(this.collection, id));
+    return result;
   };
 }
 
