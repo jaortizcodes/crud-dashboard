@@ -2,12 +2,13 @@ import React from "react";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import * as yup from "yup";
 import { UserService } from "../../../services/DatabaseService";
-
+import { useNavigate } from "react-router-dom";
 import { Formik } from "formik";
 import { Box, Button, TextField, Card, CardContent } from "@mui/material";
 import { toast } from "react-toastify";
 
 export default function LoginForm() {
+  const navigate = useNavigate();
   const initialValues = {
     username: "",
     password: "",
@@ -18,15 +19,20 @@ export default function LoginForm() {
   });
   const isNonMobile = useMediaQuery("(min-width: 600px)");
   const handleLoginFormSubmit = async (values) => {
-    // console.log(values);
     try {
-      //   console.log(values);
-
       const result = await UserService.signInAuth(values);
-      console.log("result: ", result);
-      result !== "auth/invalid-email"
-        ? toast.success("Login successfully")
-        : toast.error("Error: Login failed.");
+      console.log(result);
+      if (result !== "400") {
+        toast.success("Login successfully");
+        const token = result.accessToken;
+        const displayName = result.displayName;
+        localStorage.setItem("authToken", token);
+        localStorage.setItem("displayName", displayName);
+
+        setTimeout(() => {
+          navigate("/dashboard");
+        }, 1000);
+      } else toast.error("Error: Login failed.");
     } catch (error) {
       toast.error("Error: Login failed.");
     }

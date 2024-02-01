@@ -21,7 +21,7 @@ export default function Users() {
   return (
     <QueryClientProvider client={queryClient}>
       <Box m="20px 20px 0 20px">
-        <Header title="Distributors" description="Manage your distributors" />
+        <Header title="Users" description="Manage users of the application" />
         <Box display="flex" justifyContent="end">
           <ButtonComponent
             action={openModal}

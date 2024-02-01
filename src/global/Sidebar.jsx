@@ -32,6 +32,7 @@ export default function Sidebar() {
   const colors = tokens(theme.palette.mode);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [selected, setSelected] = useState("Dashboard");
+  const displayName = localStorage.getItem("displayName");
 
   return (
     <Box
@@ -99,7 +100,7 @@ export default function Sidebar() {
                   fontWeight="bold"
                   sx={{ mt: "12px" }}
                 >
-                  JA Ortiz
+                  {displayName}
                 </Typography>
                 <Typography
                   variant="h5"

@@ -6,6 +6,9 @@ import CardComponent from "../../components/Card";
 import DistributorCard from "./components/DistributorCard";
 import UserCard from "./components/UserCard";
 import { tokens } from "../../config/themes";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+
+const queryClient = new QueryClient();
 export default function Dashboard() {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
@@ -20,35 +23,34 @@ export default function Dashboard() {
     console.log("Fetched data:", dailyRegistrationData);
   }, [dailyRegistrationData]);
   return (
-    <Box m="20px 20px 0 20px">
-      <Header title="Dashboard" description="Summary of your dashboard" />
-      <Box display="flex" mb="20px">
-        <Grid container spacing={2}>
-          <Grid item xs={4}>
-            <DistributorCard />
+    <QueryClientProvider client={queryClient}>
+      <Box m="20px 20px 0 20px">
+        <Header title="Dashboard" description="Summary of your dashboard" />
+        <Box display="flex" mb="20px">
+          <Grid container spacing={2}>
+            <Grid item xs={4}>
+              <DistributorCard />
+            </Grid>
+            <Grid item xs={4}>
+              <UserCard />
+            </Grid>
+            <Grid item xs={4}>
+              <UserCard />
+            </Grid>
           </Grid>
-          <Grid item xs={4}>
-            <UserCard />
+        </Box>
+        <Box>
+          <Grid container spacing={2}>
+            <Grid item xs={12}>
+              <CardComponent
+                title="Daily Registration"
+                subtitle={<BarChartComponent data={dailyRegistrationData} />}
+                backgroundColor={colors.lightPinkAccent[400]}
+              />
+            </Grid>
           </Grid>
-          <Grid item xs={4}>
-            <UserCard />
-          </Grid>
-        </Grid>
+        </Box>
       </Box>
-      <Box>
-        <Grid container spacing={2}>
-          <Grid item xs={6}>
-            <CardComponent
-              title="Daily Registration"
-              subtitle={<BarChartComponent data={dailyRegistrationData} />}
-              backgroundColor={colors.lightPinkAccent[400]}
-            />
-          </Grid>
-          <Grid item xs={6}>
-            <UserCard />
-          </Grid>
-        </Grid>
-      </Box>
-    </Box>
+    </QueryClientProvider>
   );
 }

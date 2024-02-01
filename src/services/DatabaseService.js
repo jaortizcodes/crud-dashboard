@@ -8,11 +8,13 @@ import {
   setDoc,
   serverTimestamp,
   orderBy,
+  getCountFromServer,
 } from "firebase/firestore";
 import {
   getAuth,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  updateProfile,
 } from "firebase/auth";
 class DatabaseService {
   collectionName;
@@ -77,8 +79,11 @@ class DatabaseService {
     const auth = getAuth();
 
     createUserWithEmailAndPassword(auth, data.username, data.password)
-      .then((userCredential) => {
+      .then(async (userCredential) => {
         const user = userCredential.user;
+        await updateProfile(userCredential.user, {
+          displayName: data.firstName + " " + data.lastName,
+        });
         console.log(user);
         return user;
       })
@@ -106,9 +111,14 @@ class DatabaseService {
         const errorCode = error.code;
         const errorMessage = error.message;
         // console.log(errorCode, errorMessage);
-        return errorCode;
+        return "400";
       });
     return result;
+  };
+
+  countData = async () => {
+    const snapshot = await getCountFromServer(this.collection);
+    return snapshot.data().count;
   };
 }
 

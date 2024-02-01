@@ -9,9 +9,9 @@ const BarChartComponent = ({ data }) => {
         data={data}
         keys={["users"]}
         indexBy="date"
-        margin={{ top: 50, right: 60, bottom: 50, left: 60 }}
+        margin={{ top: 50, right: 80, bottom: 50, left: 80 }}
         padding={0.3}
-        colors={{ scheme: "category10" }}
+        colors={{ scheme: "accent" }}
         axisTop={null}
         axisRight={null}
         axisBottom={{
