@@ -1,30 +1,28 @@
 import React, { useEffect, useState } from "react";
-import { Box, Grid } from "@mui/material";
+import { Box, Grid, useTheme } from "@mui/material";
 import BarChartComponent from "../../components/BarChart";
 import Header from "../../components/Header";
 import CardComponent from "../../components/Card";
 import DistributorCard from "./components/DistributorCard";
 import UserCard from "./components/UserCard";
+import { tokens } from "../../config/themes";
 export default function Dashboard() {
-  // Sample data - replace with your actual data
+  const theme = useTheme();
+  const colors = tokens(theme.palette.mode);
   const [dailyRegistrationData, setDailyRegistrationData] = useState([
     { date: "2022-01-01", users: 10 },
     { date: "2022-01-02", users: 15 },
     { date: "2022-01-03", users: 10 },
     { date: "2022-01-04", users: 15 },
-    // Add more data entries as needed
   ]);
 
   useEffect(() => {
-    // Fetch your daily registration data from the server or another source
-    // and update the state using setDailyRegistrationData.
-    // For demo purposes, we're using static data here.
     console.log("Fetched data:", dailyRegistrationData);
   }, [dailyRegistrationData]);
   return (
     <Box m="20px 20px 0 20px">
       <Header title="Dashboard" description="Summary of your dashboard" />
-      <Box display="flex">
+      <Box display="flex" mb="20px">
         <Grid container spacing={2}>
           <Grid item xs={4}>
             <DistributorCard />
@@ -37,7 +35,20 @@ export default function Dashboard() {
           </Grid>
         </Grid>
       </Box>
-      <BarChartComponent data={dailyRegistrationData} />
+      <Box>
+        <Grid container spacing={2}>
+          <Grid item xs={6}>
+            <CardComponent
+              title="Daily Registration"
+              subtitle={<BarChartComponent data={dailyRegistrationData} />}
+              backgroundColor={colors.lightPinkAccent[400]}
+            />
+          </Grid>
+          <Grid item xs={6}>
+            <UserCard />
+          </Grid>
+        </Grid>
+      </Box>
     </Box>
   );
 }

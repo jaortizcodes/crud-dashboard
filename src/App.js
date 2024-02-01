@@ -5,6 +5,7 @@ import { Routes, Route } from "react-router-dom";
 import Login from "./pages/login";
 import Dashboard from "./pages/dashboard";
 import Distributors from "./pages/distributors";
+import Users from "./pages/users";
 import Topbar from "./global/Topbar";
 import Sidebar from "./global/Sidebar";
 import { ToastContainer } from "react-toastify";
@@ -23,6 +24,7 @@ export default function App() {
               <Route path="/" element={<Login />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/distributors" element={<Distributors />} />
+              <Route path="/users" element={<Users />} />
             </Routes>
             <ToastContainer />
           </main>

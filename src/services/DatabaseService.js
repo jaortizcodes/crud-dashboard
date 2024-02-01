@@ -9,6 +9,11 @@ import {
   serverTimestamp,
   orderBy,
 } from "firebase/firestore";
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
 class DatabaseService {
   collectionName;
 
@@ -65,6 +70,44 @@ class DatabaseService {
   remove = async (id) => {
     // this.mydoc = doc(this.collection, id);
     const result = await deleteDoc(doc(this.collection, id));
+    return result;
+  };
+
+  createAuth = async (data) => {
+    const auth = getAuth();
+
+    createUserWithEmailAndPassword(auth, data.username, data.password)
+      .then((userCredential) => {
+        const user = userCredential.user;
+        console.log(user);
+        return user;
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        console.log(errorCode, errorMessage);
+        return error;
+      });
+  };
+  signInAuth = async (data) => {
+    const auth = getAuth();
+
+    const result = signInWithEmailAndPassword(
+      auth,
+      data.username,
+      data.password
+    )
+      .then((userCredential) => {
+        const user = userCredential.user;
+        console.log(user);
+        return user;
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        // console.log(errorCode, errorMessage);
+        return errorCode;
+      });
     return result;
   };
 }
